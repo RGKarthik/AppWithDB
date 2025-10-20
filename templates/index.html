@@ -69,9 +69,70 @@
     </form>
     
     <div class="mt-4">
-        <a href="{{ url_for('leaderboard') }}" class="btn btn-outline-secondary">
+        <a href="{{ url_for('leaderboard') }}" class="btn btn-outline-secondary me-2">
             <i class="fas fa-trophy"></i> View Leaderboard
         </a>
+        <a href="{{ url_for('status') }}" class="btn btn-outline-info">
+            <i class="fas fa-database"></i> Database Status
+        </a>
+    </div>
+    
+    <div class="mt-3">
+        <details>
+            <summary class="text-muted" style="cursor: pointer;">
+                <small><i class="fas fa-question-circle"></i> Troubleshooting</small>
+            </summary>
+            <div class="small text-muted mt-2">
+                <p><strong>If the "Start Quiz" button doesn't work:</strong></p>
+                <ul>
+                    <li>Check <a href="{{ url_for('status') }}">Database Status</a></li>
+                    <li>Try <a href="{{ url_for('initialize_db') }}">Initialize Database</a></li>
+                    <li>Refresh this page and try again</li>
+                </ul>
+            </div>
+        </details>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Debug form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitBtn = document.querySelector('.btn-bollywood');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const playerName = document.getElementById('player_name').value.trim();
+            
+            if (!playerName) {
+                e.preventDefault();
+                alert('Please enter your name to start the quiz!');
+                return false;
+            }
+            
+            // Show loading state
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting Quiz...';
+                submitBtn.disabled = true;
+            }
+            
+            console.log('Form submitted with player name:', playerName);
+        });
+    }
+    
+    // Add hover effects
+    const answerOptions = document.querySelectorAll('.answer-option');
+    answerOptions.forEach(option => {
+        option.addEventListener('mouseenter', function() {
+            this.style.borderColor = '#ff6b6b';
+        });
+        
+        option.addEventListener('mouseleave', function() {
+            this.style.borderColor = '#e9ecef';
+        });
+    });
+});
+</script>
 {% endblock %}

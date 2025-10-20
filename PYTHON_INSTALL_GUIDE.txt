@@ -1,0 +1,41 @@
+========================================================================
+                    PYTHON INSTALLATION GUIDE
+========================================================================
+
+STEP 1: Download Python
+------------------------
+1. Go to: https://www.python.org/downloads/windows/
+2. Click "Download Python 3.11.x" (latest version)
+
+STEP 2: Install Python CORRECTLY
+---------------------------------
+VERY IMPORTANT - During installation:
+
+✅ CHECK "Add Python 3.11 to PATH"  (CRITICAL!)
+✅ CHECK "Install for all users" (recommended)
+✅ Click "Customize installation"
+✅ Make sure "pip" is checked
+✅ Make sure "Add Python to environment variables" is checked
+
+STEP 3: Restart Computer
+------------------------
+After installation, RESTART your computer completely.
+
+STEP 4: Test Installation
+-------------------------
+Open Command Prompt and type:
+   python --version
+
+You should see: Python 3.11.x
+
+STEP 5: Run the Quiz
+--------------------
+Then double-click: run_quiz.bat
+
+========================================================================
+
+ALTERNATIVE: If you can't install Python properly, try these files:
+- emergency_python_finder.py (double-click)
+- Or contact your IT administrator for Python installation
+
+========================================================================

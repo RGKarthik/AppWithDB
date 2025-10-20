@@ -51,26 +51,46 @@ def index():
 
 @app.route('/start_quiz', methods=['POST'])
 def start_quiz():
-    player_name = request.form.get('player_name')
-    if not player_name:
+    try:
+        player_name = request.form.get('player_name')
+        if not player_name:
+            return redirect(url_for('index'))
+        
+        # Check if database has questions
+        total_questions = Question.query.count()
+        if total_questions < 8:
+            # Initialize database if no questions exist
+            from init_db import init_database
+            init_database()
+        
+        session['player_name'] = player_name
+        session['score'] = 0
+        session['current_question'] = 0
+        session['answers_given'] = []
+        
+        # Get 8 random questions (2 from each difficulty level)
+        questions = []
+        for level in [1, 2, 3, 4]:
+            level_questions = Question.query.filter_by(difficulty_level=level).all()
+            if len(level_questions) >= 2:
+                selected_questions = random.sample(level_questions, 2)
+            else:
+                selected_questions = level_questions
+            questions.extend(selected_questions)
+        
+        if len(questions) < 8:
+            # If still not enough questions, get any available questions
+            all_questions = Question.query.all()
+            questions = random.sample(all_questions, min(8, len(all_questions)))
+        
+        random.shuffle(questions)
+        session['quiz_questions'] = [q.id for q in questions]
+        
+        return redirect(url_for('quiz'))
+        
+    except Exception as e:
+        print(f"Error in start_quiz: {e}")
         return redirect(url_for('index'))
-    
-    session['player_name'] = player_name
-    session['score'] = 0
-    session['current_question'] = 0
-    session['answers_given'] = []
-    
-    # Get 8 random questions (2 from each difficulty level)
-    questions = []
-    for level in [1, 2, 3, 4]:
-        level_questions = Question.query.filter_by(difficulty_level=level).all()
-        selected_questions = random.sample(level_questions, min(2, len(level_questions)))
-        questions.extend(selected_questions)
-    
-    random.shuffle(questions)
-    session['quiz_questions'] = [q.id for q in questions]
-    
-    return redirect(url_for('quiz'))
 
 @app.route('/quiz')
 def quiz():
@@ -149,7 +169,54 @@ def leaderboard():
     top_players = Player.query.order_by(Player.final_score.desc()).limit(10).all()
     return render_template('leaderboard.html', players=top_players)
 
+@app.route('/init_db')
+def initialize_db():
+    """Manual database initialization route for debugging"""
+    try:
+        from init_db import init_database
+        init_database()
+        return "Database initialized successfully! <a href='/'>Go back to quiz</a>"
+    except Exception as e:
+        return f"Error initializing database: {e}"
+
+@app.route('/status')
+def status():
+    """Show database status for debugging"""
+    try:
+        movie_count = Movie.query.count()
+        question_count = Question.query.count()
+        answer_count = Answer.query.count()
+        player_count = Player.query.count()
+        
+        return f"""
+        <h2>Database Status</h2>
+        <p>Movies: {movie_count}</p>
+        <p>Questions: {question_count}</p>
+        <p>Answers: {answer_count}</p>
+        <p>Players: {player_count}</p>
+        <br>
+        <a href='/'>Back to Quiz</a> | <a href='/init_db'>Initialize Database</a>
+        """
+    except Exception as e:
+        return f"Error checking status: {e}"
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+        
+        # Check if database has data, if not initialize it
+        if Movie.query.count() == 0:
+            print("Database is empty, initializing with movie data...")
+            try:
+                from init_db import init_database
+                init_database()
+                print("Database initialized successfully!")
+            except Exception as e:
+                print(f"Error initializing database: {e}")
+                print("You can manually initialize by visiting http://localhost:5000/init_db")
+        
+        print("Starting Bollywood Quiz Application...")
+        print("Access the quiz at: http://localhost:5000")
+        print("Database status at: http://localhost:5000/status")
+        
+    app.run(debug=True, host='127.0.0.1', port=5000)
