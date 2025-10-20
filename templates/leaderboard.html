@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Bollywood Quiz - Leaderboard{% endblock %}
+
+{% block header %}Leaderboard{% endblock %}
+{% block subtitle %}Top Bollywood Quiz Champions{% endblock %}
+
+{% block content %}
+<div class="text-center mb-4">
+    <i class="fas fa-crown" style="font-size: 3em; color: #ffd700;"></i>
+    <h3 class="mt-2">Hall of Fame</h3>
+    <p class="text-muted">The greatest Bollywood quiz masters of all time!</p>
+</div>
+
+{% if players %}
+    <div class="row">
+        {% for player in players %}
+        <div class="col-12 mb-3">
+            <div class="leaderboard-item {% if loop.index <= 3 %}border-{{ 'warning' if loop.index == 1 else 'secondary' }}{% endif %}">
+                <div class="d-flex align-items-center">
+                    <div class="rank-badge rank-{{ loop.index if loop.index <= 3 else 'other' }}">
+                        {% if loop.index == 1 %}
+                            <i class="fas fa-crown"></i>
+                        {% elif loop.index == 2 %}
+                            <i class="fas fa-medal"></i>
+                        {% elif loop.index == 3 %}
+                            <i class="fas fa-award"></i>
+                        {% else %}
+                            {{ loop.index }}
+                        {% endif %}
+                    </div>
+                    <div class="ms-3 flex-grow-1">
+                        <h5 class="mb-0">{{ player.name }}</h5>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar"></i> {{ player.date_played.strftime('%B %d, %Y at %I:%M %p') }}
+                        </small>
+                    </div>
+                </div>
+                <div class="score-display text-end">
+                    <div class="fs-4 fw-bold text-primary">{{ player.final_score }}</div>
+                    <small class="text-muted">out of 200</small>
+                    <br>
+                    {% set percentage = (player.final_score / 200) * 100 %}
+                    <small class="badge bg-{% if percentage >= 80 %}success{% elif percentage >= 60 %}info{% elif percentage >= 40 %}warning{% else %}secondary{% endif %}">
+                        {{ "%.1f"|format(percentage) }}%
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if players|length >= 10 %}
+    <div class="text-center mt-4">
+        <small class="text-muted">
+            <i class="fas fa-info-circle"></i> Showing top 10 players
+        </small>
+    </div>
+    {% endif %}
+{% else %}
+    <div class="text-center">
+        <div class="alert alert-info">
+            <i class="fas fa-users"></i>
+            <h5>No players yet!</h5>
+            <p class="mb-0">Be the first to take the quiz and claim the crown!</p>
+        </div>
+    </div>
+{% endif %}
+
+<div class="text-center mt-4">
+    <a href="{{ url_for('index') }}" class="btn btn-bollywood btn-lg">
+        <i class="fas fa-play"></i> Take Quiz
+    </a>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 text-center mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <i class="fas fa-target fa-2x text-primary mb-2"></i>
+                <h6>Perfect Score</h6>
+                <p class="small text-muted">Answer all 8 questions correctly to achieve the maximum 200 points!</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 text-center mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <i class="fas fa-fire fa-2x text-danger mb-2"></i>
+                <h6>Challenge Friends</h6>
+                <p class="small text-muted">Share the quiz with friends and see who knows Bollywood better!</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 text-center mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <i class="fas fa-redo fa-2x text-success mb-2"></i>
+                <h6>Play Again</h6>
+                <p class="small text-muted">Questions are randomized - play multiple times to improve your score!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Add hover effects to leaderboard items
+document.querySelectorAll('.leaderboard-item').forEach(item => {
+    item.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateX(5px)';
+        this.style.transition = 'all 0.3s ease';
+    });
+    
+    item.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateX(0)';
+    });
+});
+
+// Add medal animations for top 3
+document.querySelectorAll('.rank-1, .rank-2, .rank-3').forEach((badge, index) => {
+    badge.style.animation = `pulse 2s infinite ${index * 0.5}s`;
+});
+
+// Add CSS for pulse animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

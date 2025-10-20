@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Bollywood Quiz - Welcome{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <div class="mb-4">
+        <i class="fas fa-star" style="font-size: 3em; color: #feca57;"></i>
+        <i class="fas fa-film" style="font-size: 4em; color: #ff6b6b; margin: 0 10px;"></i>
+        <i class="fas fa-star" style="font-size: 3em; color: #feca57;"></i>
+    </div>
+    
+    <h2 class="mb-4">Welcome to the Ultimate Bollywood Quiz!</h2>
+    <p class="lead mb-4">Test your knowledge of Hindi cinema from the 1990s onwards. Answer 8 carefully selected questions and prove you're a true Bollywood fanatic!</p>
+    
+    <div class="row mb-4">
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-question-circle fa-2x text-success mb-2"></i>
+                    <h6>Easy (10 pts)</h6>
+                    <small>Basic movie info</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-question-circle fa-2x text-warning mb-2"></i>
+                    <h6>Medium (20 pts)</h6>
+                    <small>Cast & crew details</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-question-circle fa-2x text-orange mb-2"></i>
+                    <h6>Hard (30 pts)</h6>
+                    <small>Plot & awards</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-question-circle fa-2x text-danger mb-2"></i>
+                    <h6>Expert (40 pts)</h6>
+                    <small>Trivia & facts</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i>
+        <strong>How it works:</strong> You'll get 2 questions from each difficulty level (8 total). Maximum score is 200 points!
+    </div>
+    
+    <form method="POST" action="{{ url_for('start_quiz') }}">
+        <div class="mb-3">
+            <label for="player_name" class="form-label">Enter your name to start:</label>
+            <input type="text" class="form-control form-control-lg" id="player_name" name="player_name" 
+                   placeholder="Your Name" required maxlength="50" style="border-radius: 25px; text-align: center;">
+        </div>
+        <button type="submit" class="btn btn-bollywood btn-lg">
+            <i class="fas fa-play"></i> Start Quiz
+        </button>
+    </form>
+    
+    <div class="mt-4">
+        <a href="{{ url_for('leaderboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-trophy"></i> View Leaderboard
+        </a>
+    </div>
+</div>
+{% endblock %}

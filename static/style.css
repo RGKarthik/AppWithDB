@@ -1,0 +1,112 @@
+/* Additional custom styles for Bollywood Quiz */
+
+.text-orange {
+    color: #fd7e14 !important;
+}
+
+.quiz-title {
+    background: linear-gradient(45deg, #ff6b6b, #feca57);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+}
+
+.movie-poster {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.movie-poster:hover {
+    transform: scale(1.05);
+}
+
+.question-timer {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ff6b6b;
+}
+
+.score-animation {
+    animation: scoreBoost 0.6s ease-in-out;
+}
+
+@keyframes scoreBoost {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.bollywood-pattern {
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(255, 107, 107, 0.1) 20%, transparent 21%),
+        radial-gradient(circle at 80% 50%, rgba(254, 202, 87, 0.1) 20%, transparent 21%);
+}
+
+.neon-glow {
+    text-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+}
+
+/* Mobile responsiveness improvements */
+@media (max-width: 768px) {
+    .quiz-header {
+        padding: 20px;
+    }
+    
+    .quiz-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .btn-bollywood {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .leaderboard-item {
+        padding: 10px;
+    }
+    
+    .rank-badge {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8em;
+    }
+}
+
+/* Print styles */
+@media print {
+    .quiz-header {
+        background: #fff !important;
+        color: #000 !important;
+    }
+    
+    .btn-bollywood {
+        display: none;
+    }
+}
+
+/* Accessibility improvements */
+.answer-option:focus-within {
+    outline: 2px solid #ff6b6b;
+    outline-offset: 2px;
+}
+
+.high-contrast {
+    filter: contrast(150%);
+}
+
+/* Loading animation */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 107, 107, 0.3);
+    border-radius: 50%;
+    border-top-color: #ff6b6b;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

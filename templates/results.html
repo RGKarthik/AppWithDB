@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Bollywood Quiz - Results{% endblock %}
+
+{% block header %}Quiz Completed!{% endblock %}
+{% block subtitle %}{{ session['player_name'] }}, here are your results{% endblock %}
+
+{% block content %}
+<div class="text-center mb-4">
+    <div class="score-badge fs-2 mb-3">
+        <i class="fas fa-trophy"></i> Final Score: {{ score }}/200 points
+    </div>
+    
+    {% set percentage = (score / 200) * 100 %}
+    {% if percentage >= 80 %}
+        <div class="alert alert-success">
+            <i class="fas fa-star"></i> <strong>Excellent!</strong> You're a true Bollywood expert!
+        </div>
+    {% elif percentage >= 60 %}
+        <div class="alert alert-info">
+            <i class="fas fa-thumbs-up"></i> <strong>Good job!</strong> You know your Bollywood well!
+        </div>
+    {% elif percentage >= 40 %}
+        <div class="alert alert-warning">
+            <i class="fas fa-hand-paper"></i> <strong>Not bad!</strong> Keep watching more movies!
+        </div>
+    {% else %}
+        <div class="alert alert-light">
+            <i class="fas fa-film"></i> <strong>Keep trying!</strong> There's always room to learn more about Bollywood!
+        </div>
+    {% endif %}
+</div>
+
+<h4 class="mb-3"><i class="fas fa-list"></i> Question Review</h4>
+
+{% for answer in answers %}
+<div class="card mb-3 {% if answer.is_correct %}correct-answer{% else %}wrong-answer{% endif %}">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h6 class="card-title">{{ loop.index }}. {{ answer.question_text }}</h6>
+                <p class="mb-1">
+                    <strong>Your answer:</strong> 
+                    <span class="{% if answer.is_correct %}text-success{% else %}text-danger{% endif %}">
+                        {{ answer.selected_answer }}
+                        <i class="fas fa-{% if answer.is_correct %}check{% else %}times{% endif %}"></i>
+                    </span>
+                </p>
+                {% if not answer.is_correct %}
+                <p class="mb-1">
+                    <strong>Correct answer:</strong> 
+                    <span class="text-success">{{ answer.correct_answer }}</span>
+                </p>
+                {% endif %}
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="points-earned">
+                    {% if answer.is_correct %}
+                        <span class="badge bg-success">+{{ answer.points_earned }} points</span>
+                    {% else %}
+                        <span class="badge bg-danger">0 points</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<div class="mt-4">
+    <h4 class="mb-3"><i class="fas fa-trophy"></i> Top Scorers</h4>
+    <div class="row">
+        {% for player in top_players %}
+        <div class="col-md-4 mb-3">
+            <div class="leaderboard-item">
+                <div class="d-flex align-items-center">
+                    <div class="rank-badge rank-{{ loop.index if loop.index <= 3 else 'other' }}">
+                        {{ loop.index }}
+                    </div>
+                    <div class="ms-3">
+                        <strong>{{ player.name }}</strong>
+                        <br>
+                        <small class="text-muted">{{ player.date_played.strftime('%m/%d/%y') }}</small>
+                    </div>
+                </div>
+                <div class="score-display">
+                    <strong>{{ player.final_score }}</strong>
+                    <small class="text-muted">pts</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <a href="{{ url_for('index') }}" class="btn btn-bollywood btn-lg me-3">
+        <i class="fas fa-redo"></i> Play Again
+    </a>
+    <a href="{{ url_for('leaderboard') }}" class="btn btn-outline-secondary btn-lg">
+        <i class="fas fa-list"></i> Full Leaderboard
+    </a>
+</div>
+
+<div class="text-center mt-3">
+    <small class="text-muted">
+        <i class="fas fa-share-alt"></i> Share your score with friends and challenge them!
+    </small>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Smooth scroll to top when page loads
+window.scrollTo({ top: 0, behavior: 'smooth' });
+
+// Add confetti effect for high scores
+document.addEventListener('DOMContentLoaded', function() {
+    const score = {{ score }};
+    const percentage = (score / 200) * 100;
+    
+    if (percentage >= 80) {
+        // Simple confetti effect using CSS animations
+        for (let i = 0; i < 50; i++) {
+            createConfetti();
+        }
+    }
+});
+
+function createConfetti() {
+    const confetti = document.createElement('div');
+    confetti.style.position = 'fixed';
+    confetti.style.width = '10px';
+    confetti.style.height = '10px';
+    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.top = '-10px';
+    confetti.style.borderRadius = '50%';
+    confetti.style.pointerEvents = 'none';
+    confetti.style.animation = 'fall 3s linear forwards';
+    
+    document.body.appendChild(confetti);
+    
+    setTimeout(() => {
+        confetti.remove();
+    }, 3000);
+}
+
+// Add CSS for confetti animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fall {
+        to {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

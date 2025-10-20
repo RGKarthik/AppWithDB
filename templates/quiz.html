@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Bollywood Quiz - Question {{ question_num }}{% endblock %}
+
+{% block header %}Question {{ question_num }} of {{ total_questions }}{% endblock %}
+{% block subtitle %}
+    Points: {{ question.points }}
+    <span class="difficulty-badge difficulty-{{ question.difficulty_level }}">
+        {% if question.difficulty_level == 1 %}Easy{% elif question.difficulty_level == 2 %}Medium{% elif question.difficulty_level == 3 %}Hard{% else %}Expert{% endif %}
+    </span>
+{% endblock %}
+
+{% block content %}
+<div class="question-card">
+    <h4 class="mb-3">{{ question.question_text }}</h4>
+    
+    <form method="POST" action="{{ url_for('submit_answer') }}">
+        {% for answer in answers %}
+        <div class="answer-option">
+            <label class="form-check-label w-100" for="answer_{{ answer.id }}">
+                <input class="form-check-input" type="radio" name="answer_id" id="answer_{{ answer.id }}" 
+                       value="{{ answer.id }}" required>
+                <span class="ms-2">{{ answer.answer_text }}</span>
+            </label>
+        </div>
+        {% endfor %}
+        
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-bollywood btn-lg">
+                <i class="fas fa-arrow-right"></i> 
+                {% if question_num < total_questions %}Next Question{% else %}Finish Quiz{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="progress mt-3">
+    <div class="progress-bar" role="progressbar" 
+         style="width: {{ (question_num / total_questions) * 100 }}%; background: linear-gradient(135deg, #ff6b6b, #feca57);"
+         aria-valuenow="{{ question_num }}" aria-valuemin="0" aria-valuemax="{{ total_questions }}">
+        {{ question_num }}/{{ total_questions }}
+    </div>
+</div>
+
+<div class="text-center mt-3">
+    <small class="text-muted">
+        <i class="fas fa-clock"></i> Take your time, there's no time limit!
+    </small>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-focus on the form when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (form) {
+        form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
+
+// Add smooth transitions when selecting answers
+document.querySelectorAll('.answer-option').forEach(option => {
+    option.addEventListener('click', function() {
+        // Remove previous selection styling
+        document.querySelectorAll('.answer-option').forEach(opt => {
+            opt.style.borderColor = '#e9ecef';
+            opt.style.backgroundColor = 'white';
+        });
+        
+        // Style the selected option
+        this.style.borderColor = '#ff6b6b';
+        this.style.backgroundColor = '#fff5f5';
+        
+        // Check the radio button
+        const radio = this.querySelector('input[type="radio"]');
+        if (radio) {
+            radio.checked = true;
+        }
+    });
+});
+</script>
+{% endblock %}
