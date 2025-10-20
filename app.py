@@ -5,8 +5,19 @@ import random
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'bollywood_quiz_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bollywood_quiz.db'
+
+# Configuration for Azure deployment
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'bollywood_quiz_secret_key')
+
+# Database configuration - supports both SQLite and PostgreSQL
+database_url = os.environ.get('DATABASE_URL')
+if database_url:
+    # For Azure PostgreSQL
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    # For local development with SQLite
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bollywood_quiz.db'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -200,23 +211,25 @@ def status():
     except Exception as e:
         return f"Error checking status: {e}"
 
+# Initialize database tables
+with app.app_context():
+    db.create_all()
+    
+    # Check if database has data, if not initialize it
+    if Movie.query.count() == 0:
+        print("Database is empty, initializing with movie data...")
+        try:
+            from init_db import init_database
+            init_database()
+            print("Database initialized successfully!")
+        except Exception as e:
+            print(f"Error initializing database: {e}")
+            print("You can manually initialize by visiting /init_db")
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        
-        # Check if database has data, if not initialize it
-        if Movie.query.count() == 0:
-            print("Database is empty, initializing with movie data...")
-            try:
-                from init_db import init_database
-                init_database()
-                print("Database initialized successfully!")
-            except Exception as e:
-                print(f"Error initializing database: {e}")
-                print("You can manually initialize by visiting http://localhost:5000/init_db")
-        
-        print("Starting Bollywood Quiz Application...")
-        print("Access the quiz at: http://localhost:5000")
-        print("Database status at: http://localhost:5000/status")
-        
+    # Local development settings
+    print("Starting Bollywood Quiz Application...")
+    print("Access the quiz at: http://localhost:5000")
+    print("Database status at: http://localhost:5000/status")
+    
     app.run(debug=True, host='127.0.0.1', port=5000)

@@ -1,0 +1,19 @@
+# Azure App Service deployment configuration
+version: '1.0'
+build:
+  commands:
+    - echo "Installing dependencies..."
+    - pip install -r requirements-azure.txt
+    
+deploy:
+  commands:
+    - echo "Initializing database..."
+    - python init_db.py
+    - echo "Starting application..."
+    
+runtime:
+  python:
+    version: '3.11'
+  
+startup:
+    command: 'gunicorn --bind 0.0.0.0:$PORT app:app'
